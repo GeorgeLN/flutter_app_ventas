@@ -1,4 +1,8 @@
+// ignore_for_file: file_names, sort_child_properties_last
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:seguridad_clientes_app/providers/login_form_provider.dart';
 import 'package:seguridad_clientes_app/ui/input_decortations.dart';
 import 'package:seguridad_clientes_app/widgets/widgets.dart';
 
@@ -23,7 +27,12 @@ class LoginScreen extends StatelessWidget {
                     Text('Iniciar sesión', style: Theme.of(context).textTheme.headlineMedium),
 
                     const SizedBox(height: 30),
-                    const _LoginForm(),
+                    
+                    ChangeNotifierProvider(
+                      create: (context) => LoginFormProvider(),
+                      
+                      child: const _LoginForm(),
+                    ),
                   ],
                 ),
               ),
@@ -46,8 +55,14 @@ class _LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final loginForm = Provider.of<LoginFormProvider>(context); //Variable que tiene acceso a toda la clase "LoginFormProvider".
+
     return Form(
-      //TODO: Mantener la referencia al "Key"
+      //TODO: Mantener la referencia al "Key".
+      key: loginForm.formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction, //Valida en tiempo de ejecución lo ingresado en los TextFormField
+ 
       child: Column(
         children: [
 
@@ -60,6 +75,18 @@ class _LoginForm extends StatelessWidget {
               labelText: 'Correo electrónico',
               prefixIcon: Icons.alternate_email,
             ),
+
+            onChanged: (value) => loginForm.email = value, //Se asigna el valor del e-mail a la variable "email" de la clase LoginFormProvider.
+
+            validator: (value) {
+
+              String pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+              RegExp regExp = RegExp( pattern  );
+
+              return regExp.hasMatch(value ?? '')
+                ? null
+                : 'Formato de correo no valido';
+            },
           ),
 
           const SizedBox(height: 30),
@@ -74,6 +101,18 @@ class _LoginForm extends StatelessWidget {
               labelText: 'Contraseña',
               prefixIcon: Icons.lock_open,
             ),
+
+            onChanged: (value) => loginForm.password = value, //Se asigna el valor de la contraseña a la variable "password" de la clase LoginFormProvider.
+
+            validator: (value) {
+              
+              if ( value != null && value.length >= 6) {
+                return null;
+              }
+              else {
+                return 'La contraseña debe ser de 6 carácteres';
+              }
+            },
           ),
 
           const SizedBox(height: 30),
@@ -86,11 +125,35 @@ class _LoginForm extends StatelessWidget {
 
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-              child: const Text('INGRESAR', style: TextStyle(color: Colors.black54)),
+
+              child: Text(
+                loginForm.isLoading
+                  ? 'ESPERE ...'
+                  : 'INGRESAR',
+                style: const TextStyle(color: Colors.black54),
+              ),
             ),
 
-            onPressed: () {
+            onPressed: loginForm.isLoading ? null : () async {
+              //TODO: AQUÍ VAN LAS VALIDACIONES EN BASE DE DATOS O PETICIONES HTTP.
+
+              FocusScope.of(context).unfocus(); //Quita el teclado cuando se presiona el botón.
+
+              if (loginForm.isValidForm() == true) {
+                //Navigator.pushReplacementNamed(context, 'home'); //Ingresa al "HomeScreen" y se cierra el "LoginScreen".
+              }
+              else {
+                return;
+              }
               
+              loginForm.isLoading = true;
+
+              await Future.delayed(const Duration(seconds: 3));
+
+              //TODO: Validar si el login es correcto "Back-end"
+              loginForm.isLoading = false;
+
+              Navigator.pushReplacementNamed(context, 'home'); //Ingresa al "HomeScreen".
             },
           ),
         ],

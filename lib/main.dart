@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:seguridad_clientes_app/screens/screens.dart';
+import 'package:seguridad_clientes_app/themes/app_theme.dart';
 
 void main() => runApp(const MyApp());
 
@@ -18,9 +20,7 @@ class MyApp extends StatelessWidget {
         'home':(context) => const HomeScreen(),
       },
 
-      theme: ThemeData.light().copyWith(
-        scaffoldBackgroundColor: Colors.grey[300],
-      ),
+      theme: AppTheme.lightTheme,
     );
   }
 }
