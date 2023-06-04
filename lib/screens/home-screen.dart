@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:seguridad_clientes_app/widgets/side_menu.dart';
+import 'package:seguridad_clientes_app/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
    
@@ -18,6 +18,26 @@ class HomeScreen extends StatelessWidget {
         centerTitle: true,
       ),
 
+      body: ListView.builder(
+        itemCount: 10,
+
+        itemBuilder: (context, index) => GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, 'product');
+          },
+          
+          child: const ProductCard(),
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          
+        },
+      ),
+
+      //DRAWER 
       drawer: const SideMenu(),
     );
   }

@@ -13,11 +13,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false, //Se desactiva la etiqueta del debug.
       title: 'Inicio',
-      initialRoute: 'login',
+      initialRoute: 'home',
 
       routes: {
-        'login': (context) => const LoginScreen(),
-        'home':(context) => const HomeScreen(),
+        'login':   (context) => const LoginScreen(),
+        'home':    (context) => const HomeScreen(),
+        'product': (context) => const ProductScreen(),
       },
 
       theme: AppTheme.lightTheme,
