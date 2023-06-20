@@ -1,0 +1,1 @@
+export 'package:seguridad_clientes_app/models/product.dart';

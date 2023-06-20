@@ -3,12 +3,15 @@
 // ignore_for_file: sort_child_properties_last
 
 import 'package:flutter/material.dart';
+import 'package:seguridad_clientes_app/models/models.dart';
 import 'package:seguridad_clientes_app/themes/app_theme.dart';
 
 class ProductCard extends StatelessWidget {
    
-  const ProductCard({Key? key}) : super(key: key);
-  
+  final Product product;
+
+  const ProductCard({Key? key, required this.product}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,27 +23,27 @@ class ProductCard extends StatelessWidget {
         height: 400,
         //color: Colors.red,
 
-        child: const Stack(
+        child: Stack(
           alignment: Alignment.bottomLeft,
 
           children: [
 
-            _BackgrounImage(),
+            _BackgrounImage( url: product.picture ),
 
-            _ProducDetails(),
+            _ProducDetails(title: product.name, subTitle: product.id!),
 
             Positioned(
               top: 0,
               right: 0,
-              child: _PriceTag(),
+              child: _PriceTag(price: product.price),
             ),
 
-            //TODO: Mostrar de manera condicional, si está disponible se visualiza... De lo contrario no.
-            Positioned(
+            if ( product.available == false )
+              const Positioned(
               top: 0,
               left: 0,
               child: _NotAvailable(),
-            ),
+              ),
           ], //Children[]
         ),
 
@@ -96,19 +99,22 @@ class _NotAvailable extends StatelessWidget {
 }
 
 class _PriceTag extends StatelessWidget {
+
+  final double price;
+
   const _PriceTag({
-    super.key,
+    super.key, required this.price,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: const FittedBox( //Widget que adecua el texto para que no se descuadre del container.
+      child: FittedBox( //Widget que adecua el texto para que no se descuadre del container.
         fit: BoxFit.contain,
 
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text('\$1.99', style: TextStyle(color: Colors.white, fontSize: 20)),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text('\$$price', style: const TextStyle(color: Colors.white, fontSize: 20)),
         ),
       ),
 
@@ -126,8 +132,12 @@ class _PriceTag extends StatelessWidget {
 }
 
 class _ProducDetails extends StatelessWidget {
+
+  final String title;
+  final String subTitle;
+
   const _ProducDetails({
-    super.key,
+    super.key, required this.title, required this.subTitle,
   });
 
   @override
@@ -142,12 +152,12 @@ class _ProducDetails extends StatelessWidget {
 
         decoration: _buildBoxDecoration(),
     
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, //Alineamiento HORIZONTAL
           children: [
 
-            Text('Producto X',
-              style: TextStyle(
+            Text(title,
+              style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -157,8 +167,8 @@ class _ProducDetails extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
 
-            Text('ID Producto X',
-              style: TextStyle(
+            Text(subTitle,
+              style: const TextStyle(
                 fontSize: (12 + 1),
                 color: Colors.white,
               ),
@@ -176,9 +186,10 @@ class _ProducDetails extends StatelessWidget {
 }
 
 class _BackgrounImage extends StatelessWidget {
-  const _BackgrounImage({
-    super.key,
-  });
+  
+  final String? url;
+
+  const _BackgrounImage({super.key, required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -188,11 +199,17 @@ class _BackgrounImage extends StatelessWidget {
         width: double.infinity,
         height: 400,
         
-        child: const FadeInImage(
-          placeholder: AssetImage('assets/jar-loading.gif'),
-          image: NetworkImage('https://via.placeholder.com/400x300/f6f6f6'),
-          fit: BoxFit.cover,
-        ),
+        //Excepción cuando el producto no tenga la URL de la imagen.
+        child: url == null
+          ? const Image(
+            image: AssetImage('assets/no-image.png'),
+            fit: BoxFit.cover,
+          )
+          : FadeInImage(
+            placeholder: const AssetImage('assets/jar-loading.gif'),
+            image: NetworkImage(url!),
+            fit: BoxFit.cover,
+          ),
       ),
     );
   }

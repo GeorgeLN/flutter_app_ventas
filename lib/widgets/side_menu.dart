@@ -43,8 +43,9 @@ class SideMenu extends StatelessWidget {
               //Navigator.pop(context); //Permite cerrar el "Drawer" al momento de abrir otro Screen.
               //Navigator.pushNamed(context, SettingsScreen.routerName); //Permite abrir otro Screen al seleccionar una opción en el Drawer.
               //Navigator.pushReplacementNamed(context, SettingsScreen.routerName);
-            },
+            },            
           ),
+          
         ],
       ),
     );

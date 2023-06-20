@@ -1,5 +1,11 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: file_names
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:seguridad_clientes_app/models/models.dart';
+import 'package:seguridad_clientes_app/screens/screens.dart';
+import 'package:seguridad_clientes_app/services/services.dart';
 import 'package:seguridad_clientes_app/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -10,30 +16,49 @@ class HomeScreen extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+
+    final productService =  Provider.of<ProductsServices>(context);
+
+    if (productService.isLoading == true) {
+      return const LoadingScreen();
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
 
       appBar: AppBar(
-        title: const Text('Nombre APP'),
+        title: const Text('Productos'),
         centerTitle: true,
       ),
 
       body: ListView.builder(
-        itemCount: 10,
+        itemCount: productService.products.length,
 
         itemBuilder: (context, index) => GestureDetector(
           onTap: () {
+            productService.selectedProduct = productService.products[index].copy();
             Navigator.pushNamed(context, 'product');
           },
           
-          child: const ProductCard(),
+          child: ProductCard(
+            product: productService.products[index],
+          ),
         ),
       ),
 
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        elevation: 2,
+        backgroundColor: Colors.blue[900],
+        child: const Icon(Icons.add_shopping_cart),
+        
         onPressed: () {
-          
+          productService.selectedProduct = Product(
+            available: true,
+            name: '',
+            price: 0,
+          );
+
+          Navigator.pushNamed(context, 'product');
         },
       ),
 
